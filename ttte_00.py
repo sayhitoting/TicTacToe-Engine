@@ -91,8 +91,7 @@ def WinCheck ():
 	column = []
 	for row in range (board_size): # column check
 		piece = board_pieces[row]
-			
-			
+					
 def PlayGame():
 	
 	print ("Michael's TicTacToe is loading...")
