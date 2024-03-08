@@ -66,7 +66,6 @@ def InputParse(user_input):
 		for i in range(len(char_string)):
 			if char_string[i] == input_char[0]:
 				column_value = i
-		print (input_value[0], type(input_value[0]))
 		row_value = input_value[0] - 1
 	
 	return parse_result, row_value, column_value
@@ -88,9 +87,9 @@ def LegalMove(user_input, game_history):
 		legality = False
 	
 	if not legality:
-		print ("not a legal move")
+		print ("Not a legal move.")
 	else:
-		print ("legal move")
+		print ("Legal move.")
 	
 	return legality, move_row_index, move_column_index
 
@@ -107,12 +106,45 @@ def MoveInput(game_history):
 def PlayMove(player_symbol, move_column, move_row):
 	board_pieces[move_column][move_row] = player_symbol
 
+
 def WinCheck ():
-	column = []
-	for row in range (board_size): # column check
-		piece = board_pieces[row]
-		
-					
+	for i in range(board_size): # column win check
+		first_item = board_pieces[i][0]
+		if first_item != "_":
+			for j in range(board_size):
+				if board_pieces[i][j] != first_item:
+					break
+				elif j == board_size - 1:
+					return True
+	
+	for j in range(board_size): # row win check
+		first_item = board_pieces[0][j]
+		if first_item != "_":
+			for i in range(board_size):
+				if board_pieces[i][j] != first_item:
+					break
+				elif i == board_size - 1:
+					return True
+	
+	first_item = board_pieces[0][0] # diagonal 1 check
+	if first_item != "_":
+		for i in range(board_size):
+			if board_pieces[i][i] != first_item:
+				break
+			elif i == board_size - 1:
+					return True
+	
+	first_item = board_pieces[0][-1] # diagonal 2 check
+	if first_item != "_":
+		for i in range(board_size):
+			index = board_size - i - 1
+			if board_pieces[index][i] != first_item:
+				break
+			elif i == board_size - 1:
+					return True
+
+	return False
+
 def PlayGame():
 	
 	print ("Michael's TicTacToe is loading...")
@@ -132,6 +164,11 @@ def PlayGame():
 		move_p1 = MoveInput(game_history)		
 		print ("Your move was:", move_p1)
 		PlayMove("O", move_p1[1], move_p1[2])
+		if WinCheck ():
+			game_status = False
+			game_result = "Player 1 Wins!"
+			ShowBoard()
+			continue
 
 		ShowBoard()
 
@@ -140,16 +177,18 @@ def PlayGame():
 		move_p2 = MoveInput(game_history)		
 		print ("Your move was:", move_p2)
 		PlayMove("X", move_p2[1], move_p2[2])
-	
-		if turns > board_size ** 2 + 1:
-			game_status = False # failsafe
-			game_result = "Too Many Turns", turns
+
+		if WinCheck ():
+			game_status = False
+			game_result = "Player 2 Wins!"
+			ShowBoard()
+			continue
 
 	print (game_result)
 
 char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 board_pieces = []
-board_size = 3
+board_size = 4
 
 CreateBoard (board_size)
 PlayGame()
