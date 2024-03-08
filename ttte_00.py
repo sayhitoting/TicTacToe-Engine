@@ -18,50 +18,69 @@ def ShowBoard ():
 	for row in range(board_size): # display board
 		print (row + 1, board_pieces[row])
 
+def InputParse(user_input):
+	# element parsing
+	parse_result = True
+
+	if len(str(user_input)) > 2:
+		parse_result = False
+		parse_note = "Too many characters were input."
+		row_value = parse_note
+		column_value = parse_note
+	elif len(str(user_input)) < 2:
+		parse_result = False
+		parse_note = "Too few characters were input."
+		row_value = parse_note
+		column_value = parse_note
+	else:
+		input_char = []
+		input_value = []
+		for element in user_input: # search for letters and numbers
+			if element in char_string:
+				input_char.append(element)
+			elif element.isdigit():
+				input_value.append(int(element))
+		
+		if len(input_char) < 1: # too few letters
+			parse_result = False
+			parse_note = "No acceptable column letter (e.g. A) found."
+			row_value = parse_note
+			column_value = parse_note
+		if len(input_char) > 1: # too many letters
+			parse_result = False
+			parse_note = "Multiple column letter (e.g. A) found."
+			row_value = parse_note
+			column_value = parse_note
+		if len(input_value) < 1: # too few numbers
+			parse_result = False
+			parse_note = "No acceptable row number (e.g. 1) found."
+			row_value = parse_note
+			column_value = parse_note
+		if len(input_value) > 1: # too many numbers
+			parse_result = False
+			parse_note = "Multiple row numbers (e.g. 1) found."
+			row_value = parse_note
+			column_value = parse_note
+
+	if parse_result: # no error is thrown, character conversion to index
+		for i in range(len(char_string)):
+			if char_string[i] == input_char[0]:
+				column_value = i
+		print (input_value[0], type(input_value[0]))
+		row_value = input_value[0] - 1
+	
+	return parse_result, row_value, column_value
 
 def LegalMove(user_input, game_history):
 	legality = True
 
-	# find column value
-	column_chars = [] # total list of column labels
-	for column_index in range(board_size):
-		column_chars.append(char_string[column_index])
-	
-	column_value = []
-	for input_char in user_input: # compare input chars to labeled columns
-		if input_char in column_chars:
-			column_value.append(input_char)
-	
-	if len(column_value) < 1: # existence check
-		print ("Your move, [", user_input, "], does not have a column value within the board.")
-		legality = False
-		
-	if len(column_value) > 1: # duplicity check
-		print ("Your move, [", user_input, "], contains more than one column.")
-		legality = False
-			
-	# find row value
-	row_value = [] 
-	for entry in user_input:  # compare entry with valid ints
-		if entry.isdigit():
-			row_value.append(int(entry))
-	
-	if len(row_value) < 1: # existence check
-		print ("Your move, [", user_input, "], does not have a row value within the board.")
-		legality = False
-		
-	if len(row_value) > 1: # duplicity check
-		print ("Your move, [", user_input, "], contains more than one row.")
-		legality = False
-
-	#resulting move indices
-	if legality:
-		move_row_index = row_value[0] - 1 # row index
-	
-		for i in range(len(char_string)): # compare valid chars to entry
-			if 	column_value[0] == char_string[i]:
-				move_column_index = i # column index
-		print ("Move indices(R,C):", move_row_index, move_column_index)
+	input_parsing = InputParse(user_input)
+	move_row_index = input_parsing[1]
+	move_column_index = input_parsing[2]
+	if not input_parsing[0]:
+		print (str(input_parsing[1]))	
+	else:
+		print ("Input, [", user_input,"] Accepted. Row ", move_row_index, ", Column ", move_column_index)
 
 	# check if square is already occupied
 	if [move_row_index, move_column_index] in game_history:
@@ -80,7 +99,8 @@ def MoveInput(game_history):
 	legal_check = LegalMove(player_input, game_history)
 	while not legal_check[0]:
 		# True is legal
-		MoveInput(game_history)	
+		player_input = str(input("Please input coordinate for your next move:"))
+		legal_check = LegalMove(player_input, game_history)	
 	game_history.append([legal_check[1], legal_check[2]])
 	return player_input, legal_check[1], legal_check[2]
 
@@ -91,6 +111,7 @@ def WinCheck ():
 	column = []
 	for row in range (board_size): # column check
 		piece = board_pieces[row]
+		
 					
 def PlayGame():
 	
@@ -128,7 +149,7 @@ def PlayGame():
 
 char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 board_pieces = []
-board_size = 4
+board_size = 3
 
 CreateBoard (board_size)
 PlayGame()
