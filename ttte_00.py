@@ -1,10 +1,13 @@
+import copy
+
 def CreateBoard (board_size):
+	board_clear = []
 	for y in range(board_size):
 		board_y = []
 		for x in range(board_size):
 			board_y.append('_')
-		board_pieces.append(board_y)
-	return board_size
+		board_clear.append(board_y)
+	return board_clear
 		
 def ShowBoard ():
 	if board_size > len(char_string):
@@ -79,11 +82,11 @@ def LegalMove(user_input, game_history):
 	if not input_parsing[0]:
 		print (str(input_parsing[1]))	
 	else:
-		print ("Input, [", user_input,"] Accepted. Row ", move_row_index, ", Column ", move_column_index)
+		print ("Input, [", user_input,"] accepted. Row ", move_row_index, ", Column ", move_column_index)
 
 	# check if square is already occupied
 	if [move_row_index, move_column_index] in game_history:
-		print ("Your move, [", user_input, "], has already been played before.")
+		print ("Your move, [", user_input, "], has already been played.")
 		legality = False
 	
 	if not legality:
@@ -96,18 +99,21 @@ def LegalMove(user_input, game_history):
 def MoveInput(game_history):
 	player_input = str(input("Please input coordinate for your next move:"))
 	legal_check = LegalMove(player_input, game_history)
+
 	while not legal_check[0]:
 		# True is legal
 		player_input = str(input("Please input coordinate for your next move:"))
 		legal_check = LegalMove(player_input, game_history)	
 	game_history.append([legal_check[1], legal_check[2]])
+
 	return player_input, legal_check[1], legal_check[2]
 
 def PlayMove(player_symbol, move_column, move_row):
 	board_pieces[move_column][move_row] = player_symbol
 
+def WinCheck (game_history):
+	# 0 is no win, 1 is a win, 2 is a draw
 
-def WinCheck ():
 	for i in range(board_size): # column win check
 		first_item = board_pieces[i][0]
 		if first_item != "_":
@@ -115,7 +121,7 @@ def WinCheck ():
 				if board_pieces[i][j] != first_item:
 					break
 				elif j == board_size - 1:
-					return True
+					return 1
 	
 	for j in range(board_size): # row win check
 		first_item = board_pieces[0][j]
@@ -124,7 +130,7 @@ def WinCheck ():
 				if board_pieces[i][j] != first_item:
 					break
 				elif i == board_size - 1:
-					return True
+					return 1
 	
 	first_item = board_pieces[0][0] # diagonal 1 check
 	if first_item != "_":
@@ -132,7 +138,7 @@ def WinCheck ():
 			if board_pieces[i][i] != first_item:
 				break
 			elif i == board_size - 1:
-					return True
+					return 1
 	
 	first_item = board_pieces[0][-1] # diagonal 2 check
 	if first_item != "_":
@@ -141,9 +147,60 @@ def WinCheck ():
 			if board_pieces[index][i] != first_item:
 				break
 			elif i == board_size - 1:
-					return True
+					return 1
+	
+	moves_max = (board_size ** 2) # draw check if no win
+	if len(game_history) >=  moves_max:
+		return 2
+		
+	
 
-	return False
+	return 0
+
+def Engine (game_status, game_history):
+	if game_status:
+		board_eval = copy.deepcopy(game_history)
+		
+		if eval_depth:
+			print ("Evaluating to set depth:")
+
+		else:
+			print ("Evaluating full game:")
+			num_possible = 3 ** (board_size ** 2)
+			eval_status = False # simulated game status: True means game ended.
+			eval_counter = 0
+			while not eval_status: 
+				eval_counter += 1
+				if eval_counter == num_possible:
+					eval_status = True
+				
+				eval = Evaluation(board_eval)
+
+
+	else:
+		print ("Checkmate.")
+
+def Evaluation (board_eval, game_status):
+	win_percent_p1 = []
+	win_percent_p2 = []
+	mate_found = False
+
+	
+
+
+	# skip testing squares that are already played
+
+	for y in range(len(eval_depth)):
+		for x in range(len()):
+			if [y, x] not in game_history:
+				print("Move was played")
+	
+	print ("P1:", win_percent_p1, "P2:", win_percent_p2)
+	if mate_found:
+		print("Mate in:", mate_seq, "moves.")
+	
+	
+
 
 def PlayGame():
 	
@@ -164,9 +221,18 @@ def PlayGame():
 		move_p1 = MoveInput(game_history)		
 		print ("Your move was:", move_p1)
 		PlayMove("O", move_p1[1], move_p1[2])
-		if WinCheck ():
+
+		# Check Player 1's move for wins
+		win_check = WinCheck (game_history)
+
+		if win_check == 1:
 			game_status = False
 			game_result = "Player 1 Wins!"
+			ShowBoard()
+			continue
+		elif win_check == 2:
+			game_status = False
+			game_result = "Draw!"
 			ShowBoard()
 			continue
 
@@ -178,19 +244,30 @@ def PlayGame():
 		print ("Your move was:", move_p2)
 		PlayMove("X", move_p2[1], move_p2[2])
 
-		if WinCheck ():
+		# Check Player 2's move for wins
+		win_check = WinCheck (game_history)
+
+		if win_check == 1:
 			game_status = False
 			game_result = "Player 2 Wins!"
+			ShowBoard()
+			continue
+		elif win_check == 2:
+			game_status = False
+			game_result = "Draw!"
 			ShowBoard()
 			continue
 
 	print (game_result)
 
-char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-board_pieces = []
-board_size = 4
 
-CreateBoard (board_size)
+
+
+char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+board_size = 3
+eval_depth = 0 # 0 depth means full evaluation per move
+
+board_pieces = CreateBoard (board_size)
 PlayGame()
 
 
