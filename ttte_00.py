@@ -157,51 +157,66 @@ def WinCheck (game_history):
 
 	return 0
 
-def Engine (game_status, game_history):
-	if game_status:
-		board_eval = copy.deepcopy(game_history)
+def FindEmptySquares (game_history):
+	empty_squares = []
+
+	# check if each square is featured in the game history
+	for column_val in range(board_size): 
+		for row_val in range(board_size):
+			test_square = [column_val, row_val]
+			if test_square not in game_history:
+				empty_squares.append(test_square)
+
+	return empty_squares
+
+def SingleDepthEval (game_history):
+	"""
+	win rate is based on percentage and stored as eval_state as a tuple, 
+	as a value between 0 and 100.
+	""" 
+	win_check = WinCheck(game_history)
+
+	if win_check == 1: # win
+		eval_state = [100,0]
+
+	elif win_check == 2: # draw
+		eval_state = [50,50]
+
+	# else: # game in play, win_check should be 0
 		
-		if eval_depth:
-			print ("Evaluating to set depth:")
 
-		else:
-			print ("Evaluating full game:")
-			num_possible = 3 ** (board_size ** 2)
-			eval_status = False # simulated game status: True means game ended.
-			eval_counter = 0
-			while not eval_status: 
-				eval_counter += 1
-				if eval_counter == num_possible:
-					eval_status = True
-				
-				eval = Evaluation(board_eval)
 
+	return 
+
+def Evaluation (game_status, game_history, eval_depth):
+	if game_status:
+		eval_board = copy.deepcopy(game_history)
+		moves_possible = board_size ** 2
+
+		if eval_depth == 0: # if depth is unlimited:
+
+			"""
+			1. layer one: immediate next move
+			1a. place next move by corresponding player
+			1b. check board state for wins
+				if win, stop line
+			1c. place alternate next move and repeat
+			2. layer two: next next move
+			2a. for each next move, test next move
+
+
+			"""
+
+
+
+			for y in range(len(moves_possible)):
+				for x in range(len()):
+					if [y, x] not in game_history: # skip testing squares that are already played.
+						eval_board[x][y] = player_symbol
 
 	else:
-		print ("Checkmate.")
-
-def Evaluation (board_eval, game_status):
-	win_percent_p1 = []
-	win_percent_p2 = []
-	mate_found = False
-
-	
-
-
-	# skip testing squares that are already played
-
-	for y in range(len(eval_depth)):
-		for x in range(len()):
-			if [y, x] not in game_history:
-				print("Move was played")
-	
-	print ("P1:", win_percent_p1, "P2:", win_percent_p2)
-	if mate_found:
-		print("Mate in:", mate_seq, "moves.")
-	
-	
-
-
+		print ("Game is over, nothing to evaluate.")
+					
 def PlayGame():
 	
 	print ("Michael's TicTacToe is loading...")
@@ -237,6 +252,7 @@ def PlayGame():
 			continue
 
 		ShowBoard()
+		print (FindEmptySquares(game_history))
 
 		# Player 2's move
 		print ("Turn {}".format(turns), "for Player 2")
