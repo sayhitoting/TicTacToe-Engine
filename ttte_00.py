@@ -9,7 +9,7 @@ def CreateBoard (board_size):
 		board_clear.append(board_y)
 	return board_clear
 		
-def ShowBoard ():
+def ShowBoard (board_display):
 	if board_size > len(char_string):
 		print("Board is too big to display properly.")
 	
@@ -19,7 +19,7 @@ def ShowBoard ():
 	print (" ", display_columns_id)
 
 	for row in range(board_size): # display board
-		print (row + 1, board_pieces[row])
+		print (row + 1, board_display[row])
 
 def InputParse(user_input):
 	# element parsing
@@ -108,43 +108,43 @@ def MoveInput(game_history):
 
 	return player_input, legal_check[1], legal_check[2]
 
-def PlayMove(player_symbol, move_column, move_row):
-	board_pieces[move_column][move_row] = player_symbol
+def PlayMove(board_display, player_symbol, move_column, move_row):
+	board_display[move_column][move_row] = player_symbol
 
-def WinCheck (game_history):
+def WinCheck (board_display, game_history):
 	# 0 is no win, 1 is a win, 2 is a draw
 
 	for i in range(board_size): # column win check
-		first_item = board_pieces[i][0]
+		first_item = board_display[i][0]
 		if first_item != "_":
 			for j in range(board_size):
-				if board_pieces[i][j] != first_item:
+				if board_display[i][j] != first_item:
 					break
 				elif j == board_size - 1:
 					return 1
 	
 	for j in range(board_size): # row win check
-		first_item = board_pieces[0][j]
+		first_item = board_display[0][j]
 		if first_item != "_":
 			for i in range(board_size):
-				if board_pieces[i][j] != first_item:
+				if board_display[i][j] != first_item:
 					break
 				elif i == board_size - 1:
 					return 1
 	
-	first_item = board_pieces[0][0] # diagonal 1 check
+	first_item = board_display[0][0] # diagonal 1 check
 	if first_item != "_":
 		for i in range(board_size):
-			if board_pieces[i][i] != first_item:
+			if board_display[i][i] != first_item:
 				break
 			elif i == board_size - 1:
 					return 1
 	
-	first_item = board_pieces[0][-1] # diagonal 2 check
+	first_item = board_display[0][-1] # diagonal 2 check
 	if first_item != "_":
 		for i in range(board_size):
 			index = board_size - i - 1
-			if board_pieces[index][i] != first_item:
+			if board_display[index][i] != first_item:
 				break
 			elif i == board_size - 1:
 					return 1
@@ -169,24 +169,39 @@ def FindEmptySquares (game_history):
 
 	return empty_squares
 
-def SingleDepthEval (game_history):
+def SingleDepthEval (game_history, board_display, player_id, win_check):
 	"""
+	player_id is set to either 1, or 2. 
+	SingleDepthEval() accepts the most recent player's id.
+
 	win rate is based on percentage and stored as eval_state as a tuple, 
-	as a value between 0 and 100.
+	as a value between 0 and 100. player 1's value is first, player 2's is second.
 	""" 
-	win_check = WinCheck(game_history)
 
 	if win_check == 1: # win
-		eval_state = [100,0]
+		if player_id == 1:
+			eval_ratio = [100,0]
+		if player_id == 2:
+			eval_ratio = [0,100]
 
 	elif win_check == 2: # draw
-		eval_state = [50,50]
+		eval_ratio = [50,50]
 
-	# else: # game in play, win_check should be 0
+	else: # game in play, win_check should be 0
+		empty_squares = FindEmptySquares(game_history)
+		eval_board = copy.deepcopy(game_history)
+
+		# create a new line by filling every empty square in current board
+		for square in empty_squares:
+			PlayMove(eval_board)
+
+			
+			
+
 		
 
 
-	return 
+	return eval_ratio
 
 def Evaluation (game_status, game_history, eval_depth):
 	if game_status:
@@ -225,43 +240,44 @@ def PlayGame():
 	game_result = "Game In Progress"
 	game_history = []
 	turns = 0
+
+	board_display = CreateBoard (board_size)
 	
 	while game_status:
 		turns += 1
 
-		ShowBoard()
+		ShowBoard(board_display)
 
 		# Player 1's move
 		print ("Turn {}".format(turns), "for Player 1")
 		move_p1 = MoveInput(game_history)		
 		print ("Your move was:", move_p1)
-		PlayMove("O", move_p1[1], move_p1[2])
+		PlayMove(board_display, "O", move_p1[1], move_p1[2])
 
 		# Check Player 1's move for wins
-		win_check = WinCheck (game_history)
+		win_check = WinCheck (board_display, game_history)
 
 		if win_check == 1:
 			game_status = False
 			game_result = "Player 1 Wins!"
-			ShowBoard()
+			ShowBoard(board_display)
 			continue
 		elif win_check == 2:
 			game_status = False
 			game_result = "Draw!"
-			ShowBoard()
+			ShowBoard(board_display)
 			continue
 
-		ShowBoard()
-		print (FindEmptySquares(game_history))
+		ShowBoard(board_display)
 
 		# Player 2's move
 		print ("Turn {}".format(turns), "for Player 2")
 		move_p2 = MoveInput(game_history)		
 		print ("Your move was:", move_p2)
-		PlayMove("X", move_p2[1], move_p2[2])
+		PlayMove(board_display,"X", move_p2[1], move_p2[2])
 
 		# Check Player 2's move for wins
-		win_check = WinCheck (game_history)
+		win_check = WinCheck (board_display, game_history)
 
 		if win_check == 1:
 			game_status = False
@@ -283,7 +299,7 @@ char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 board_size = 3
 eval_depth = 0 # 0 depth means full evaluation per move
 
-board_pieces = CreateBoard (board_size)
+
 PlayGame()
 
 
