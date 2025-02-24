@@ -193,7 +193,7 @@ def SingleDepthEval (game_history, board_display, player_id, win_check):
 
 		# create a new line by filling every empty square in current board
 		for square in empty_squares:
-			PlayMove(eval_board)
+			PlayMove(eval_board, player_id, square[0], square[1])
 
 			
 			
@@ -201,7 +201,7 @@ def SingleDepthEval (game_history, board_display, player_id, win_check):
 		
 
 
-	return eval_ratio
+	return eval_ratio, fastest_line_win
 
 def Evaluation (game_status, game_history, eval_depth):
 	if game_status:
