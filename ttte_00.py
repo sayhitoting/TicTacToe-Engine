@@ -292,13 +292,9 @@ def PlayGame():
 
 	print (game_result)
 
-
-
-
 char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 board_size = 3
 eval_depth = 0 # 0 depth means full evaluation per move
-
 
 PlayGame()
 
