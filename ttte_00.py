@@ -203,7 +203,7 @@ def SingleDepthEval (game_history, board_display, player_id, win_check):
 
 	return eval_ratio, fastest_line_win
 
-def Evaluation (game_status, game_history, eval_depth):
+def Evaluation (game_status, game_history, player_id):
 	if game_status:
 		eval_board = copy.deepcopy(game_history)
 		moves_possible = board_size ** 2
@@ -211,18 +211,18 @@ def Evaluation (game_status, game_history, eval_depth):
 		if eval_depth == 0: # if depth is unlimited:
 
 			"""
-			1. layer one: immediate next move
-			1a. place next move by corresponding player
-			1b. check board state for wins
-				if win, stop line
-			1c. place alternate next move and repeat
-			2. layer two: next next move
-			2a. for each next move, test next move
+			SINGLE LINE
+			1. play immediate next move on test board
+			2. check for wins
+			2.1. if win, kill loop and return moves list, steps count
+			2.2. if no win, play next move and continue loop
 
-
+			ALL LINES
+			1. analyze first line
+			2. analyze second line
+			2.1. check if first move has already been tested in the first line
+			2.1.1. if yes, play next move, and continue 
 			"""
-
-
 
 			for y in range(len(moves_possible)):
 				for x in range(len()):
@@ -231,6 +231,7 @@ def Evaluation (game_status, game_history, eval_depth):
 
 	else:
 		print ("Game is over, nothing to evaluate.")
+
 					
 def PlayGame():
 	
