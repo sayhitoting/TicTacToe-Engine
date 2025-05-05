@@ -169,7 +169,7 @@ def FindEmptySquares (game_history):
 
 	return empty_squares
 
-def SingleDepthEval (game_history, board_display, player_id, win_check):
+# def SingleDepthEval (game_history, board_display, player_id, win_check):
 	"""
 	player_id is set to either 1, or 2. 
 	SingleDepthEval() accepts the most recent player's id.
@@ -205,32 +205,44 @@ def SingleDepthEval (game_history, board_display, player_id, win_check):
 
 def Evaluation (game_status, game_history, player_id):
 	if game_status:
+		"""
+		1. Make deepcopy of the game.
+		2. Find unplayed squares.
+		3. Create deepcopy of unplayed squares list, "square_pool".
+		3. Create new list of lists of possible lines, "eval_lines"
+		4. Create new list of lists of winning lines, "p1_win_lines"
+		5. Create new list of lists of winning lines, "p2_win_lines"
+		6. Create new list of lists of drawn lines, "draw_lines"
+		7. Start new list in "eval_lines", "current_line"
+		8. Play unplayed square on deepcopy.
+		9. History check on any other lists in "eval_lines" for similarity
+			If similar, break loop and start next unplayed square.
+			If not similar, continue.
+		10. Remove played square from "square_pool".
+		10. Repeat
+		10. Wincheck. 
+			If win, check if list length is odd or even.
+			If win and odd, append "current_line" to "p1_win_lines".
+			If win and even, append "current_line" to "p2_win_lines".
+			If draw, append "current_line" to "draw_lines".
+			If no win, continue.
+		
+		
+		5. If no win, play next unplayed square
+
+
+		"""
+
+
 		eval_board = copy.deepcopy(game_history)
 		moves_possible = board_size ** 2
 
-		if eval_depth == 0: # if depth is unlimited:
-
-			"""
-			SINGLE LINE
-			1. play immediate next move on test board
-			2. check for wins
-			2.1. if win, kill loop and return moves list, steps count
-			2.2. if no win, play next move and continue loop
-
-			ALL LINES
-			1. analyze first line
-			2. analyze second line
-			2.1. check if first move has already been tested in the first line
-			2.1.1. if yes, play next move, and continue 
-			"""
-
-			for y in range(len(moves_possible)):
-				for x in range(len()):
-					if [y, x] not in game_history: # skip testing squares that are already played.
-						eval_board[x][y] = player_symbol
+		
 
 	else:
 		print ("Game is over, nothing to evaluate.")
+
+	return p1_chances, p2_chances, shortest_win, eval_notes
 
 					
 def PlayGame():
@@ -295,7 +307,7 @@ def PlayGame():
 
 char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 board_size = 3
-eval_depth = 0 # 0 depth means full evaluation per move
+eval_depth = board_size ** 2
 
 PlayGame()
 
