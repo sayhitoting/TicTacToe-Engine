@@ -209,18 +209,19 @@ def Evaluation (game_status, game_history, player_id):
 		1. Make deepcopy of the game.
 		2. Find unplayed squares.
 		3. Create deepcopy of unplayed squares list, "square_pool".
-		3. Create new list of lists of possible lines, "eval_lines"
-		4. Create new list of lists of winning lines, "p1_win_lines"
-		5. Create new list of lists of winning lines, "p2_win_lines"
-		6. Create new list of lists of drawn lines, "draw_lines"
-		7. Start new list in "eval_lines", "current_line"
-		8. Play unplayed square on deepcopy.
-		9. History check on any other lists in "eval_lines" for similarity
+		4. Create new list of lists of possible lines, "eval_lines"
+		5. Create new list of lists of winning lines, "p1_won_lines"
+		6. Create new list of lists of winning lines, "p2_won_lines"
+		7. Create new list of lists of drawn lines, "drawn_lines"
+		8. Find all unplayed squares and put into new list, "squares_unplayed"
+		8. Start new list in "eval_lines", "current_line"
+		9. Play unplayed square on deepcopy.
+		10. History check on any other lists in "eval_lines" for similarity
 			If similar, break loop and start next unplayed square.
 			If not similar, continue.
-		10. Remove played square from "square_pool".
-		10. Repeat
-		10. Wincheck. 
+		11. Remove played square from "square_pool".
+		12. Repeat
+		13. Wincheck. 
 			If win, check if list length is odd or even.
 			If win and odd, append "current_line" to "p1_win_lines".
 			If win and even, append "current_line" to "p2_win_lines".
