@@ -1,5 +1,11 @@
 import copy
 
+class Eval_Line:
+	def __init__(self, line, line_length, win_state):
+		self.line = line
+		self.line_length = line_length
+		self.win_state = win_state	# -1 = lose, 1 = win, 0 = draw
+
 def CreateBoard (board_size):
 	board_clear = []
 	for y in range(board_size):
@@ -157,7 +163,7 @@ def WinCheck (board_display, game_history):
 
 	return 0
 
-def FindEmptySquares (game_history):
+def Eval_FindEmptySquares (game_history):
 	empty_squares = []
 
 	# check if each square is featured in the game history
@@ -169,52 +175,24 @@ def FindEmptySquares (game_history):
 
 	return empty_squares
 
-# def SingleDepthEval (game_history, board_display, player_id, win_check):
-	"""
-	player_id is set to either 1, or 2. 
-	SingleDepthEval() accepts the most recent player's id.
+def Eval_PermutateEmptySquares (empty_squares):
+	lines2append = []
 
-	win rate is based on percentage and stored as eval_state as a tuple, 
-	as a value between 0 and 100. player 1's value is first, player 2's is second.
-	""" 
-
-	if win_check == 1: # win
-		if player_id == 1:
-			eval_ratio = [100,0]
-		if player_id == 2:
-			eval_ratio = [0,100]
-
-	elif win_check == 2: # draw
-		eval_ratio = [50,50]
-
-	else: # game in play, win_check should be 0
-		empty_squares = FindEmptySquares(game_history)
-		eval_board = copy.deepcopy(game_history)
-
-		# create a new line by filling every empty square in current board
-		for square in empty_squares:
-			PlayMove(eval_board, player_id, square[0], square[1])
-
-			
-			
-
+	for i in range(len(empty_squares)):
 		
 
 
-	return eval_ratio, fastest_line_win
 
-def Evaluation (game_status, game_history, player_id):
+def Eval_Evaluation (game_status, game_history, player_id):
 	if game_status:
 		"""
 		1. Make deepcopy of the game.
-		2. Find unplayed squares.
-		3. Create deepcopy of unplayed squares list, "square_pool".
-		4. Create new list of lists of possible lines, "eval_lines"
-		5. Create new list of lists of winning lines, "p1_won_lines"
-		6. Create new list of lists of winning lines, "p2_won_lines"
-		7. Create new list of lists of drawn lines, "drawn_lines"
-		8. Find all unplayed squares and put into new list, "squares_unplayed"
-		8. Start new list in "eval_lines", "current_line"
+		2. Find unplayed squares and put into new list, "squares_empty".
+		3. Create deepcopy of unplayed squares list, "squares_pool".
+		4. Create new unplayed line until win condition met:
+			Append square from "squares_empty" to 
+
+
 		9. Play unplayed square on deepcopy.
 		10. History check on any other lists in "eval_lines" for similarity
 			If similar, break loop and start next unplayed square.
@@ -237,6 +215,14 @@ def Evaluation (game_status, game_history, player_id):
 
 		eval_board = copy.deepcopy(game_history)
 		moves_possible = board_size ** 2
+
+		squares_empty = Eval_FindEmptySquares(game_history)
+		eval_lines = []
+
+
+
+
+
 
 		
 
