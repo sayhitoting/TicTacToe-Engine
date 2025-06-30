@@ -110,7 +110,7 @@ def MoveInput(game_history):
 		# True is legal
 		player_input = str(input("Please input coordinate for your next move:"))
 		legal_check = LegalMove(player_input, game_history)	
-	game_history.append([legal_check[1], legal_check[2]])
+	game_history.append([legal_check[1], legal_check[2]]) #stores game history as [index_row, index_column]
 
 	return player_input, legal_check[1], legal_check[2]
 
@@ -163,8 +163,73 @@ def WinCheck (board_display, game_history):
 
 	return 0
 
+def WinCheck_V2_Checks(moves):
+	"""
+	Written for checking wins after moves have been sorted by player.
+	The variable "moves" refers to a list of moves made only by one player.
+	"""
+
+	win = False
+
+	# rows wincheck
+	for index_test_row in range(board_size):
+		matches_row = [move for move in moves if move[0] == index_test_row]
+		if len(matches_row) == board_size:
+			win = True
+	
+	# columns wincheck
+	for index_test_column in range(board_size):
+		matches_column = [move for move in moves if move[1] == index_test_column]
+		if len(matches_column) == board_size:
+			win = True
+
+	# diagonals wincheck
+	## first diagonal, index_row == 0, index_column == 0
+	if [0,0] in moves:
+		win_squares = []
+		for i in range(board_size):
+			win_square = [i,i]
+			win_squares.append(win_square)
+		if all(square in win_squares for square in moves):
+			win = True
+
+
+	
+
+	return win
+
+def WinCheck_V2(game_history):
+	# 0 is no win, 1 is a win, 2 is a draw
+
+	# split moves into player one and two
+	moves_p1 = []
+	moves_p2 = []
+
+	for i in range(len(game_history)):
+		if i % 2 == 0: # i is even, and thus player 1's move
+			moves_p1.append(game_history[i])
+		else: # i is odd, and thus player 2's move
+			moves_p2.append(game_history[i])
+	
+	# check if either player has wins
+	win_p1 = WinCheck_V2_Checks(moves_p1)
+	win_p2 = WinCheck_V2_Checks(moves_p2)
+
+	if win_p1: 
+		return 1, 1 # Player One wins (win, winner 1)
+	if win_p2:
+		return 1, 2 # Player Two wins (win, winner 2)
+			
+	# check for draws
+	if len(game_history) == board_size ** 2:
+		if not win:
+			return 2, 0 # draw (draw, no winner)
+
+		
+
 def Eval_FindEmptySquares (game_history):
 	empty_squares = []
+	used_squares = []
 
 	# check if each square is featured in the game history
 	for column_val in range(board_size): 
@@ -172,12 +237,13 @@ def Eval_FindEmptySquares (game_history):
 			test_square = [column_val, row_val]
 			if test_square not in game_history:
 				empty_squares.append(test_square)
+			else:
+				used_squares.append(test_square)
 
-	return empty_squares
+	return empty_squares, used_squares
 
-def Eval_PermutateEmptySquares (empty_squares):
-	lines2append = []
-
+def Eval_PermutateEmptySquares (game_history, empty_squares):
+	# for each iteration, perform wincheck
 	for i in range(len(empty_squares)):
 		
 
