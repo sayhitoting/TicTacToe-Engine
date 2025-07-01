@@ -1,4 +1,5 @@
 import copy
+from itertools import permutations
 
 class Eval_Line:
 	def __init__(self, line, line_length, win_state):
@@ -189,9 +190,8 @@ def WinCheck_V2(game_history):
 		if not win:
 			return 2, 0 # draw (draw, no winner)
 
-	return 0, 0
+	return 0, 0 # no win or winner, game continues
 		
-
 def Eval_FindEmptySquares (game_history):
 	empty_squares = []
 	used_squares = []
@@ -207,50 +207,52 @@ def Eval_FindEmptySquares (game_history):
 
 	return empty_squares, used_squares
 
-# def Eval_PermutateEmptySquares (game_history, empty_squares):
-	# for each iteration, perform wincheck
-	# for i in range(len(empty_squares)):
+def Eval_CalculateLines (game_history, empty_squares):
+	empty_squares_permutations = list(permutations(empty_squares))
+	p1_win_lines = []
+	p2_win_lines = []
+	draw_lines = []
+
+	for permutation in empty_squares_permutations:
+		# simulated game line to completion
+		line = game_history + list(permutation) 
 		
-# def Eval_Evaluation (game_status, game_history, player_id):
-	# if game_status:
-# 		"""
-# 		1. Make deepcopy of the game.
-# 		2. Find unplayed squares and put into new list, "squares_empty".
-# 		3. Create deepcopy of unplayed squares list, "squares_pool".
-# 		4. Create new unplayed line until win condition met:
-# 			Append square from "squares_empty" to 
+		# check for wins at every move
+		line_test = []
+		for move in line:
+			line_test.append(move)
+			wincheck_line = WinCheck_V2(line_test)
 
+			if wincheck_line[0] == 1: # win detected, save and terminate line
+				if wincheck_line[1] == 1: # player 1 win
+					p1_win_lines.append(line_test.copy())
+				elif wincheck_line[1] == 2: # player 2 win
+					p2_win_lines.append(line_test.copy())
+				break
 
-		# 9. Play unplayed square on deepcopy.
-		# 10. History check on any other lists in "eval_lines" for similarity
-		# 	If similar, break loop and start next unplayed square.
-		# 	If not similar, continue.
-		# 11. Remove played square from "square_pool".
-		# 12. Repeat
-		# 13. Wincheck. 
-		# 	If win, check if list length is odd or even.
-		# 	If win and odd, append "current_line" to "p1_win_lines".
-		# 	If win and even, append "current_line" to "p2_win_lines".
-		# 	If draw, append "current_line" to "draw_lines".
-		# 	If no win, continue.
-		
-		
-		# 5. If no win, play next unplayed square
+			elif wincheck_line[0] == 2: # draw
+				draw_lines.append(line_test.copy())
+				break
 
+	return p1_win_lines, p2_win_lines, draw_lines
 
-		# """
+def Eval_Evaluation (game_history):
+	# calculate win percentage
+	empty_squares = Eval_FindEmptySquares(game_history)[0]
+	evaluation = Eval_CalculateLines (game_history, empty_squares)
 
+	total_win_lines = len(evaluation[0]) + len(evaluation[1])
+	if total_win_lines == 0:
+        win_percentage_p1 = 0.5
+        win_percentage_p2 = 0.5
+	else:
+			win_percentage_p1 = len(p1_win_lines) / total_win_lines
+			win_percentage_p2 = len(p2_win_lines) / total_win_lines
+	
+	# find shortest mate
 
-		# eval_board = copy.deepcopy(game_history)
-		# moves_possible = board_size ** 2
+	return win_percentage_p1, win_percentage_p2
 
-		# squares_empty = Eval_FindEmptySquares(game_history)
-		# eval_lines = []
-
-	# else:
-	# 	print ("Game is over, nothing to evaluate.")
-
-	# return p1_chances, p2_chances, shortest_win, eval_notes
 
 					
 def PlayGame():
