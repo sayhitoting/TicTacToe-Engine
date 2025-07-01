@@ -117,52 +117,6 @@ def MoveInput(game_history):
 def PlayMove(board_display, player_symbol, move_column, move_row):
 	board_display[move_column][move_row] = player_symbol
 
-def WinCheck (board_display, game_history):
-	# 0 is no win, 1 is a win, 2 is a draw
-
-	for i in range(board_size): # column win check
-		first_item = board_display[i][0]
-		if first_item != "_":
-			for j in range(board_size):
-				if board_display[i][j] != first_item:
-					break
-				elif j == board_size - 1:
-					return 1
-	
-	for j in range(board_size): # row win check
-		first_item = board_display[0][j]
-		if first_item != "_":
-			for i in range(board_size):
-				if board_display[i][j] != first_item:
-					break
-				elif i == board_size - 1:
-					return 1
-	
-	first_item = board_display[0][0] # diagonal 1 check
-	if first_item != "_":
-		for i in range(board_size):
-			if board_display[i][i] != first_item:
-				break
-			elif i == board_size - 1:
-					return 1
-	
-	first_item = board_display[0][-1] # diagonal 2 check
-	if first_item != "_":
-		for i in range(board_size):
-			index = board_size - i - 1
-			if board_display[index][i] != first_item:
-				break
-			elif i == board_size - 1:
-					return 1
-	
-	moves_max = (board_size ** 2) # draw check if no win
-	if len(game_history) >=  moves_max:
-		return 2
-		
-	
-
-	return 0
-
 def WinCheck_V2_Checks(moves):
 	"""
 	Written for checking wins after moves have been sorted by player.
@@ -176,7 +130,8 @@ def WinCheck_V2_Checks(moves):
 		matches_row = [move for move in moves if move[0] == index_test_row]
 		if len(matches_row) == board_size:
 			win = True
-	
+			
+
 	# columns wincheck
 	for index_test_column in range(board_size):
 		matches_column = [move for move in moves if move[1] == index_test_column]
@@ -186,16 +141,24 @@ def WinCheck_V2_Checks(moves):
 	# diagonals wincheck
 	## first diagonal, index_row == 0, index_column == 0
 	if [0,0] in moves:
-		win_squares = []
+		win_squares_dia1 = []
 		for i in range(board_size):
-			win_square = [i,i]
-			win_squares.append(win_square)
-		if all(square in win_squares for square in moves):
+			win_square = [i, i]
+			win_squares_dia1.append(win_square)
+		if all(square in moves for square in win_squares_dia1): # check if all squares in win_squares_dia1 are in moves
 			win = True
-
-
 	
-
+	## second diagonal, index_row == board_size - 1, index_column == 0
+	if [board_size - 1, 0] in moves:
+		win_squares_dia2 = []
+		for i in range(board_size):
+			win_square = [board_size - 1 - i, i]
+			win_squares_dia2.append(win_square)
+		if all(square in moves for square in win_squares_dia2):
+			win = True
+	
+	
+	
 	return win
 
 def WinCheck_V2(game_history):
@@ -216,15 +179,17 @@ def WinCheck_V2(game_history):
 	win_p2 = WinCheck_V2_Checks(moves_p2)
 
 	if win_p1: 
-		return 1, 1 # Player One wins (win, winner 1)
-	if win_p2:
-		return 1, 2 # Player Two wins (win, winner 2)
+		return 1, 1 # Player One wins (win, player 1)
+	
+	elif win_p2:
+		return 1, 2 # Player Two wins (win, player 2)
 			
 	# check for draws
-	if len(game_history) == board_size ** 2:
+	elif len(game_history) == board_size ** 2:
 		if not win:
 			return 2, 0 # draw (draw, no winner)
 
+	return 0, 0
 		
 
 def Eval_FindEmptySquares (game_history):
@@ -242,60 +207,50 @@ def Eval_FindEmptySquares (game_history):
 
 	return empty_squares, used_squares
 
-def Eval_PermutateEmptySquares (game_history, empty_squares):
+# def Eval_PermutateEmptySquares (game_history, empty_squares):
 	# for each iteration, perform wincheck
-	for i in range(len(empty_squares)):
+	# for i in range(len(empty_squares)):
 		
+# def Eval_Evaluation (game_status, game_history, player_id):
+	# if game_status:
+# 		"""
+# 		1. Make deepcopy of the game.
+# 		2. Find unplayed squares and put into new list, "squares_empty".
+# 		3. Create deepcopy of unplayed squares list, "squares_pool".
+# 		4. Create new unplayed line until win condition met:
+# 			Append square from "squares_empty" to 
 
 
-
-def Eval_Evaluation (game_status, game_history, player_id):
-	if game_status:
-		"""
-		1. Make deepcopy of the game.
-		2. Find unplayed squares and put into new list, "squares_empty".
-		3. Create deepcopy of unplayed squares list, "squares_pool".
-		4. Create new unplayed line until win condition met:
-			Append square from "squares_empty" to 
-
-
-		9. Play unplayed square on deepcopy.
-		10. History check on any other lists in "eval_lines" for similarity
-			If similar, break loop and start next unplayed square.
-			If not similar, continue.
-		11. Remove played square from "square_pool".
-		12. Repeat
-		13. Wincheck. 
-			If win, check if list length is odd or even.
-			If win and odd, append "current_line" to "p1_win_lines".
-			If win and even, append "current_line" to "p2_win_lines".
-			If draw, append "current_line" to "draw_lines".
-			If no win, continue.
+		# 9. Play unplayed square on deepcopy.
+		# 10. History check on any other lists in "eval_lines" for similarity
+		# 	If similar, break loop and start next unplayed square.
+		# 	If not similar, continue.
+		# 11. Remove played square from "square_pool".
+		# 12. Repeat
+		# 13. Wincheck. 
+		# 	If win, check if list length is odd or even.
+		# 	If win and odd, append "current_line" to "p1_win_lines".
+		# 	If win and even, append "current_line" to "p2_win_lines".
+		# 	If draw, append "current_line" to "draw_lines".
+		# 	If no win, continue.
 		
 		
-		5. If no win, play next unplayed square
+		# 5. If no win, play next unplayed square
 
 
-		"""
+		# """
 
 
-		eval_board = copy.deepcopy(game_history)
-		moves_possible = board_size ** 2
+		# eval_board = copy.deepcopy(game_history)
+		# moves_possible = board_size ** 2
 
-		squares_empty = Eval_FindEmptySquares(game_history)
-		eval_lines = []
+		# squares_empty = Eval_FindEmptySquares(game_history)
+		# eval_lines = []
 
+	# else:
+	# 	print ("Game is over, nothing to evaluate.")
 
-
-
-
-
-		
-
-	else:
-		print ("Game is over, nothing to evaluate.")
-
-	return p1_chances, p2_chances, shortest_win, eval_notes
+	# return p1_chances, p2_chances, shortest_win, eval_notes
 
 					
 def PlayGame():
@@ -321,14 +276,14 @@ def PlayGame():
 		PlayMove(board_display, "O", move_p1[1], move_p1[2])
 
 		# Check Player 1's move for wins
-		win_check = WinCheck (board_display, game_history)
+		win_check = WinCheck_V2 (game_history)
 
-		if win_check == 1:
+		if win_check[0] == 1:
 			game_status = False
 			game_result = "Player 1 Wins!"
 			ShowBoard(board_display)
 			continue
-		elif win_check == 2:
+		elif win_check[0] == 2:
 			game_status = False
 			game_result = "Draw!"
 			ShowBoard(board_display)
@@ -343,24 +298,24 @@ def PlayGame():
 		PlayMove(board_display,"X", move_p2[1], move_p2[2])
 
 		# Check Player 2's move for wins
-		win_check = WinCheck (board_display, game_history)
+		win_check = WinCheck_V2 (game_history)
 
-		if win_check == 1:
+		if win_check[0] == 1:
 			game_status = False
 			game_result = "Player 2 Wins!"
-			ShowBoard()
+			ShowBoard(board_display)
 			continue
-		elif win_check == 2:
+		elif win_check[0] == 2:
 			game_status = False
 			game_result = "Draw!"
-			ShowBoard()
+			ShowBoard(board_display)
 			continue
 
 	print (game_result)
 
 char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 board_size = 3
-eval_depth = board_size ** 2
+eval_depth = board_size ** 3
 
 PlayGame()
 
