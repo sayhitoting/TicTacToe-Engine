@@ -187,7 +187,7 @@ def WinCheck_V2(game_history):
 			
 	# check for draws
 	elif len(game_history) == board_size ** 2:
-		if not win:
+		if not win_p1 or not win_p2:
 			return 2, 0 # draw (draw, no winner)
 
 	return 0, 0 # no win or winner, game continues
@@ -237,19 +237,31 @@ def Eval_CalculateLines (game_history, empty_squares):
 	return p1_win_lines, p2_win_lines, draw_lines
 
 def Eval_Evaluation (game_history):
+	print ("Evaluating...")
+
 	# calculate win percentage
 	empty_squares = Eval_FindEmptySquares(game_history)[0]
 	evaluation = Eval_CalculateLines (game_history, empty_squares)
 
 	total_win_lines = len(evaluation[0]) + len(evaluation[1])
 	if total_win_lines == 0:
-        win_percentage_p1 = 0.5
-        win_percentage_p2 = 0.5
+		win_percentage_p1 = 0.5
+		win_percentage_p2 = 0.5
 	else:
-			win_percentage_p1 = len(p1_win_lines) / total_win_lines
-			win_percentage_p2 = len(p2_win_lines) / total_win_lines
-	
+		win_percentage_p1 = len(evaluation[0]) / total_win_lines
+		win_percentage_p2 = len(evaluation[1]) / total_win_lines
+	print (total_win_lines, " lines were evaluated.")
+	print ("P1 | ", win_percentage_p1, " | ", win_percentage_p2, "| P2")
+
 	# find shortest mate
+	p1_win_lines_sorted = sorted(evaluation[0], key=len)
+	p2_win_lines_sorted = sorted(evaluation[1], key=len)
+
+	# announce closest mate
+	if len(p1_win_lines_sorted[0]) < board_size:
+		print("Mate in ", len(p1_win_lines_sorted[0]), "by Player 1.")
+	elif len(p2_win_lines_sorted[0]) < board_size:
+		print("Mate in ", len(p2_win_lines_sorted[0]), "by Player 2.")
 
 	return win_percentage_p1, win_percentage_p2
 
@@ -258,6 +270,11 @@ def Eval_Evaluation (game_history):
 def PlayGame():
 	
 	print ("Michael's TicTacToe is loading...")
+	play_with_eval = str(input("Would you like to see the evaluation during play? Y/N:"))
+	if play_with_eval == "Y":
+		eval_bool = True
+	else:
+		eval_bool = False
 
 	game_status = True # if True, game is still in play
 	game_result = "Game In Progress"
@@ -270,6 +287,8 @@ def PlayGame():
 		turns += 1
 
 		ShowBoard(board_display)
+		if eval_bool:
+			Eval_Evaluation (game_history)
 
 		# Player 1's move
 		print ("Turn {}".format(turns), "for Player 1")
@@ -292,6 +311,9 @@ def PlayGame():
 			continue
 
 		ShowBoard(board_display)
+		if eval_bool:
+			Eval_Evaluation (game_history)
+
 
 		# Player 2's move
 		print ("Turn {}".format(turns), "for Player 2")
