@@ -258,10 +258,12 @@ def Eval_Evaluation (game_history):
 	p2_win_lines_sorted = sorted(evaluation[1], key=len)
 
 	# announce closest mate
-	if len(p1_win_lines_sorted[0]) < board_size:
-		print("Mate in ", len(p1_win_lines_sorted[0]), "by Player 1.")
-	elif len(p2_win_lines_sorted[0]) < board_size:
-		print("Mate in ", len(p2_win_lines_sorted[0]), "by Player 2.")
+	if p1_win_lines_sorted:
+		if len(p1_win_lines_sorted[0]) == 1:
+			print("Mate in ", len(p1_win_lines_sorted[0]), "by Player 1.")
+	elif p2_win_lines_sorted:
+		if len(p1_win_lines_sorted[0]) == 1:
+			print("Mate in ", len(p1_win_lines_sorted[0]), "by Player 1.")
 
 	return win_percentage_p1, win_percentage_p2
 
