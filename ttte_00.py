@@ -1,11 +1,5 @@
 from itertools import permutations
 
-class Eval_Line:
-	def __init__(self, line, line_length, win_state):
-		self.line = line
-		self.line_length = line_length
-		self.win_state = win_state	# -1 = lose, 1 = win, 0 = draw
-
 def CreateBoard (board_size):
 	board_clear = []
 	for y in range(board_size):
