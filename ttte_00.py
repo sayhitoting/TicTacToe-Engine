@@ -1,4 +1,3 @@
-import copy
 from itertools import permutations
 
 class Eval_Line:
