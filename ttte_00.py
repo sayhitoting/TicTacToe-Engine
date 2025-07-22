@@ -1,6 +1,5 @@
 import copy
 from itertools import permutations
-import math as m
 
 class Eval_Line:
 	def __init__(self, line, line_length, win_state):
