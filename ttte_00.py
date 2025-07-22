@@ -1,5 +1,6 @@
 import copy
 from itertools import permutations
+import math as m
 
 class Eval_Line:
 	def __init__(self, line, line_length, win_state):
@@ -243,15 +244,16 @@ def Eval_Evaluation (game_history):
 	empty_squares = Eval_FindEmptySquares(game_history)[0]
 	evaluation = Eval_CalculateLines (game_history, empty_squares)
 
-	total_win_lines = len(evaluation[0]) + len(evaluation[1])
-	if total_win_lines == 0:
+	total_lines = len(evaluation[0]) + len(evaluation[1]) + len(evaluation[2])
+	if total_lines == 0:
 		win_percentage_p1 = 0.5
 		win_percentage_p2 = 0.5
 	else:
-		win_percentage_p1 = len(evaluation[0]) / total_win_lines
-		win_percentage_p2 = len(evaluation[1]) / total_win_lines
-	print (total_win_lines, " lines were evaluated.")
-	print ("P1 | ", win_percentage_p1, " | ", win_percentage_p2, "| P2")
+		win_percentage_p1 = round(100 * (len(evaluation[0]) / total_lines))
+		win_percentage_p2 = round(100 * (len(evaluation[1]) / total_lines))
+		draw_percentage = round(100 * (len(evaluation[2]) / total_lines))
+	print (total_lines, " lines were evaluated.")
+	print ("P1 - ", win_percentage_p1, "% | ", draw_percentage, "% |",  win_percentage_p2, "% - P2")
 
 	# find shortest mate
 	p1_win_lines_sorted = sorted(evaluation[0], key=len)
@@ -259,11 +261,11 @@ def Eval_Evaluation (game_history):
 
 	# announce closest mate
 	if p1_win_lines_sorted:
-		if len(p1_win_lines_sorted[0]) == 1:
-			print("Mate in ", len(p1_win_lines_sorted[0]), "by Player 1.")
+		if len(p1_win_lines_sorted[0]) == len(game_history) + 1:
+			print("Mate in ", len(1), "by Player 1.")
 	elif p2_win_lines_sorted:
-		if len(p1_win_lines_sorted[0]) == 1:
-			print("Mate in ", len(p1_win_lines_sorted[0]), "by Player 1.")
+		if len(p1_win_lines_sorted[0]) == len(game_history) + 1:
+			print("Mate in ", len(1), "by Player 2.")
 
 	return win_percentage_p1, win_percentage_p2
 
