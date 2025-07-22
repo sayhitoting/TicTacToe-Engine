@@ -260,12 +260,13 @@ def Eval_Evaluation (game_history):
 	p2_win_lines_sorted = sorted(evaluation[1], key=len)
 
 	# announce closest mate
-	if p1_win_lines_sorted:
-		if len(p1_win_lines_sorted[0]) == len(game_history) + 1:
-			print("Mate in ", len(1), "by Player 1.")
-	elif p2_win_lines_sorted:
-		if len(p1_win_lines_sorted[0]) == len(game_history) + 1:
-			print("Mate in ", len(1), "by Player 2.")
+	mate_tolerance = 1
+	if p1_win_lines_sorted and len(game_history) % 2 == 0:
+		if len(p1_win_lines_sorted[0]) == len(game_history) + mate_tolerance:
+			print("Mate in ", mate_tolerance, "by Player 1.")
+	if p2_win_lines_sorted and len(game_history) % 2 != 0:
+		if len(p1_win_lines_sorted[0]) == len(game_history) + mate_tolerance:
+			print("Mate in ", mate_tolerance, "by Player 2.")
 
 	return win_percentage_p1, win_percentage_p2
 
@@ -274,6 +275,7 @@ def Eval_Evaluation (game_history):
 def PlayGame():
 	
 	print ("Michael's TicTacToe is loading...")
+
 	play_with_eval = str(input("Would you like to see the evaluation during play? Y/N:"))
 	if play_with_eval == "Y":
 		eval_bool = True
@@ -286,26 +288,36 @@ def PlayGame():
 	turns = 0
 
 	board_display = CreateBoard (board_size)
-	
+	ShowBoard(board_display)
+	if eval_bool:
+		Eval_Evaluation (game_history)
+
 	while game_status:
-		turns += 1
+		player_name = "1"
+		player_symbol = "O"
 
-		ShowBoard(board_display)
-		if eval_bool:
-			Eval_Evaluation (game_history)
+		if game_history:
+			if len(game_history) % 2 == 0: # even number of moves, P1
+				turns += 1
+				player_name = "1"
+				player_symbol = "O"
+			else: # odd number of moves, P2
+				player_name = "2"
+				player_symbol = "X"
 
-		# Player 1's move
-		print ("Turn {}".format(turns), "for Player 1")
-		move_p1 = MoveInput(game_history)		
-		print ("Your move was:", move_p1)
-		PlayMove(board_display, "O", move_p1[1], move_p1[2])
+		# Plays a move
+		print ("Turn {}".format(turns + 1), "for Player", player_name)
+		move = MoveInput(game_history)		
+		print ("Your move was:", move)
+		PlayMove(board_display, player_symbol, move[1], move[2])
 
-		# Check Player 1's move for wins
+		# Check move for wins
 		win_check = WinCheck_V2 (game_history)
 
 		if win_check[0] == 1:
 			game_status = False
-			game_result = "Player 1 Wins!"
+			win_message = "Player {} Wins!"
+			game_result = win_message.format(str(player_name))
 			ShowBoard(board_display)
 			continue
 		elif win_check[0] == 2:
@@ -313,31 +325,10 @@ def PlayGame():
 			game_result = "Draw!"
 			ShowBoard(board_display)
 			continue
-
+		
 		ShowBoard(board_display)
 		if eval_bool:
 			Eval_Evaluation (game_history)
-
-
-		# Player 2's move
-		print ("Turn {}".format(turns), "for Player 2")
-		move_p2 = MoveInput(game_history)		
-		print ("Your move was:", move_p2)
-		PlayMove(board_display,"X", move_p2[1], move_p2[2])
-
-		# Check Player 2's move for wins
-		win_check = WinCheck_V2 (game_history)
-
-		if win_check[0] == 1:
-			game_status = False
-			game_result = "Player 2 Wins!"
-			ShowBoard(board_display)
-			continue
-		elif win_check[0] == 2:
-			game_status = False
-			game_result = "Draw!"
-			ShowBoard(board_display)
-			continue
 
 	print (game_result)
 
