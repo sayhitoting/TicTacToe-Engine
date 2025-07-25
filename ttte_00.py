@@ -252,14 +252,23 @@ def Eval_Evaluation (game_history):
 	p2_win_lines_sorted = sorted(evaluation[1], key=len)
 
 	# announce closest mate
-	mate_tolerance = 1
-	if p1_win_lines_sorted and len(game_history) % 2 == 0:
-		if len(p1_win_lines_sorted[0]) == len(game_history) + mate_tolerance:
-			print("Mate in ", mate_tolerance, "by Player 1.")
-	if p2_win_lines_sorted and len(game_history) % 2 != 0:
-		if len(p1_win_lines_sorted[0]) == len(game_history) + mate_tolerance:
-			print("Mate in ", mate_tolerance, "by Player 2.")
+	mate_tolerance = 3
 
+	if p1_win_lines_sorted and len(game_history) % 2 == 0:
+		player_winner = 1
+	else:
+		player_winner = 2
+
+	if p1_win_lines_sorted[0] and player_winner == 1:
+		win_line = p1_win_lines_sorted[0]
+	elif p2_win_lines_sorted[0] and player_winner == 2:
+		win_line = p2_win_lines_sorted[0]
+
+	if win_line:	
+		if len(p1_win_lines_sorted[0]) <= len(game_history) + mate_tolerance:
+			mate_count = len(p1_win_lines_sorted[0]) - len(game_history)
+			print("Mate in {}, by Player {}".format(mate_count, player_winner))
+		
 	return win_percentage_p1, win_percentage_p2
 
 
@@ -298,7 +307,7 @@ def PlayGame():
 				player_symbol = "X"
 
 		# Plays a move
-		print ("Turn {}".format(turns + 1), "for Player", player_name)
+		print ("Turn {} for Player {}".format(turns + 1, player_name))
 		move = MoveInput(game_history)		
 		print ("Your move was:", move)
 		PlayMove(board_display, player_symbol, move[1], move[2])
